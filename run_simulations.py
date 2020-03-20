@@ -6,7 +6,7 @@ nodes = ["5653", "55ad", "55e4", "5599", "55dd", "5565", "560b", "5632", "55b3",
 #nodes = ["5563", "55ad"]
 
 mod_names = {1: "FSK", 2: "OQPSK", 3: "OFDM", 4: "1M", 5: "2M", 6 : "3M", 7: "Round-Robin", 8: "Random", 9: "Best"}
-#mod_names = {1: "Random"}
+#mod_names = {1: "3M"}
 
 results = {}
 for n in nodes:
@@ -30,6 +30,7 @@ hasFile = False
 
 if(not hasFile):
     os.system("rm "+output_file)
+    
     for node in nodes:
         input_file = "traces/pdr_phy_"+node+".txt"
         of = open(output_file, "a+")
@@ -42,7 +43,7 @@ if(not hasFile):
             of.close()
             for k in range(replications):
                 command = "python3 simulator_sun_single_1M_2M.py 1 "+str(number_retries)+" -10 "+str(i)+" < "+input_file+" >> "+output_file
-              #  print(command)
+                print(command)
                 os.system(command)
       
         of = open(output_file, "a+")  
@@ -50,7 +51,7 @@ if(not hasFile):
         of.close()
         for k in range(replications):   
             command = "python3 simulator_sun_single_1M_2M.py 1 "+str(number_retries)+" 10 1 < "+input_file+" >> "+output_file
-           # print(command)
+            print(command)
             os.system(command)
 
         of = open(output_file, "a+")
@@ -59,7 +60,7 @@ if(not hasFile):
 
         for k in range(replications):
             command = "python3 simulator_sun_single_1M_2M.py 2 "+str(number_retries)+" 10 < "+input_file+" >> "+output_file
-            #print(command)
+            print(command)
             os.system(command)
 
         of = open(output_file, "a+")    
@@ -68,7 +69,7 @@ if(not hasFile):
 
         for k in range(replications):   
             command = "python3 simulator_sun_3M.py "+str(number_retries)+" 10 < "+input_file+" >> "+output_file
-            #print(command)
+            print(command)
             os.system(command)
                 
         of = open(output_file, "a+")    
@@ -77,7 +78,7 @@ if(not hasFile):
 
         for k in range(replications):
             command = "python3 simulator_sun_roundrobin.py "+str(number_retries)+" < "+input_file+" >> "+output_file
-            #print(command)
+            print(command)
             os.system(command)
             
         of = open(output_file, "a+")    
@@ -86,7 +87,7 @@ if(not hasFile):
 
         for k in range(replications):
             command = "python3 simulator_sun_random.py "+str(number_retries)+" < "+input_file+" >> "+output_file
-            #print(command)
+            print(command)
             os.system(command)
         
         of = open(output_file, "a+")    
@@ -95,7 +96,7 @@ if(not hasFile):
 
         for k in range(replications):
             command = "python3 simulator_sun_best.py "+str(number_retries)+" < "+input_file+" >> "+output_file
-            #print(command)
+            print(command)
             os.system(command)
         
 of = open(output_file, "r")
@@ -140,7 +141,7 @@ for pdr_or_rnp in range(2):
     ofs.write(out_min+"\n")
     ofs.write("\n\n")
 
-    #results per node
+    #results per node mean
     out_node = "Config" + "\t"
     out_v = ""
     out_max = ""
@@ -162,6 +163,30 @@ for pdr_or_rnp in range(2):
         out_v += "\n"
     ofs.write(out_v+"\n")
     ofs.write("\n\n")
+    
+    if(replications > 1):
+        #results per node stdev
+        out_node = "Config" + "\t"
+        out_v = ""
+        out_max = ""
+        out_min = ""
+        out_mod = ""
+        for n in nodes:
+            out_node += n+"\t"
+        ofs.write(out_node+"\n")
+
+        pdr = 0
+        maxv = 0
+        minv = 1000
+        for i in range (1,(len(mod_names)+1)):
+            out_v += mod_names[i] + "\t"
+            m = mod_names[i]
+            for n in nodes:
+                avg = stdev(results[n][m][pdr_or_rnp])
+                out_v += str(avg) + "\t"
+            out_v += "\n"
+        ofs.write(out_v+"\n")
+        ofs.write("\n\n")
        
 of.close()
 ofs.close()

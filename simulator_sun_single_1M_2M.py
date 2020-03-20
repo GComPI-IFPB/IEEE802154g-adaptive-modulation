@@ -33,6 +33,8 @@ acc_trial = 0
 
 verbose = False
 
+arr = 0
+
 try:
     random.seed()
     current_config = 0
@@ -43,6 +45,8 @@ try:
             if(cont_window == 0):
                 ent = input().split('\t')
                 cont_window = int(ent[1])
+                if(cont_window > 75):
+                    continue
                 pdr_fsk = float(ent[2])
                 pdr_oqpsk = float(ent[3])
                 pdr_ofdm = float(ent[4])
@@ -52,6 +56,10 @@ try:
                     print("PDR OFDM",pdr_ofdm)
             cont_window -= 1
             
+    #    out_log = ent[0] + '\t' + ent[2] + '\t' + ent[3] + '\t' + ent[4] + "\t" + str(current_mod[0]) + "\t" + str(arr)
+     #   out_log = out_log.replace(".",",")
+     #   print(out_log)
+        
         #calculating a new estimation for one of the modulations
         if(tx_counter[current_mod[retry%2]] == window_size):
             arr = ack_counter[current_mod[retry%2]]/tx_counter[current_mod[retry%2]]

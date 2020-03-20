@@ -29,6 +29,8 @@ try:
             if(cont_window == 0):
                 ent = input().split('\t')
                 cont_window = int(ent[1])
+                if(cont_window > 75):
+                    continue
                 pdr_fsk = float(ent[2])
                 pdr_oqpsk = float(ent[3])
                 pdr_ofdm = float(ent[4])
