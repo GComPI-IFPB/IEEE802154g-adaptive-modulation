@@ -5,6 +5,8 @@ import sys
 
 number_of_retries = int(sys.argv[1])
 window_size = int(sys.argv[2])
+w_prob = 20 #int(sys.argv[3])
+
 
 modulations = {1:"FSK", 2:"OQPSK", 3:"OFDM"}
 current_mod = [1,2,3]
@@ -59,9 +61,17 @@ try:
             if(verbose):
                 print("ARR of {} = {}: ".format(modulations[inst_mod],arr))
          
-            w_prob = 5
+          # w_prob = 5
+          # for i in range(3):
+          #     prob_mod[i] = (1+(w_prob*lqe_mod[i]))/(3+(w_prob*sum(lqe_mod)))
+          #     if(verbose):
+          #         print(prob_mod[i])
+          
+            sum_p = 0
             for i in range(3):
-                prob_mod[i] = (1+(w_prob*lqe_mod[i]))/(3+(w_prob*sum(lqe_mod)))
+                sum_p += (1+lqe_mod[i])**w_prob
+            for i in range(3):
+                prob_mod[i] = ((1+lqe_mod[i])**w_prob)/(sum_p)
                 if(verbose):
                     print(prob_mod[i])
                    
@@ -77,8 +87,9 @@ try:
         if(verbose):
             print("Modulation to be used: ",inst_mod)
             
-        if(lqe_mod[inst_mod-1] < prr_th and (retry > 0 and inst_mod == previous_mod)):            
-            w_prob = 5
+       # if(lqe_mod[inst_mod-1] < prr_th and (retry > 0 and inst_mod == previous_mod)):   
+        if((retry > 0 and inst_mod == previous_mod)):                      
+            #w_prob = int(sys.argv[3])
             if(inst_mod == 1):
                 mod_1 = 2
                 mod_2 = 3
@@ -89,12 +100,28 @@ try:
                 mod_1 = 1
                 mod_2 = 2
             prob_ret = [0,0]
+            
+           # k = 0
+           # for i in range(1,4):
+           #    if(i == inst_mod):
+           #        continue
+           #    prob_ret[k] = (1+(w_prob*lqe_mod[i-1]))/(2+(w_prob*(lqe_mod[mod_1-1] + lqe_mod[mod_2-1])))
+           #    k+=1
+            
+            prob_ret = [0,0]  
+            #w_prob = int(sys.argv[3])
+            sum_p = 0
+            for i in range(1,4):
+                if(i == inst_mod):
+                    continue
+                sum_p += (1+lqe_mod[i-1])**w_prob
             k = 0
             for i in range(1,4):
                 if(i == inst_mod):
                     continue
-                prob_ret[k] = (1+(w_prob*lqe_mod[i-1]))/(2+(w_prob*(lqe_mod[mod_1-1] + lqe_mod[mod_2-1])))
+                prob_mod[k] = ((1+lqe_mod[i-1])**w_prob)/(sum_p)
                 k+=1
+                
             
             trial = random.random()
             if(trial <= prob_ret[0]):
