@@ -46,7 +46,7 @@ try:
         pdr_phy = max(pdr_fsk,pdr_ofdm,pdr_oqpsk)
                 
         if(verbose):
-            print("Transmitting packet {} retry {} modulation {}".format(packet_counter, retry))
+            print("Transmitting packet {} retry {}".format(packet_counter, retry))
         retry_counter += 1
         
         #packet delivered
